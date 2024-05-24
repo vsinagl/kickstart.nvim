@@ -20,6 +20,7 @@ vim.g.loaded_netrwPlugin = 1
 -- NOTE: You can change these options as you wish!
 --  For more options, you can see `:help option-list`
 
+vim.opt.number = true
 vim.opt.relativenumber = true
 vim.opt.numberwidth = 2
 -- You can also add relative line numbers, for help with jumping.
@@ -86,7 +87,7 @@ vim.opt.hlsearch = true
 --END OF OPT
 --
 --bufer keymap settings
-vim.keymap.set('n', '<leader>h', ':bn<CR>', { desc = 'go to next buffer' })
+vim.keymap.set('n', '<leader>h', ':bp<CR>', { desc = 'go to next buffer' })
 vim.keymap.set('n', '<leader>l', ':bn<CR>', { desc = 'go to next buffer' })
 --
 vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
@@ -536,7 +537,7 @@ require('lazy').setup({
       }
     end,
   },
-
+  --[[
   { -- Autoformat
     'stevearc/conform.nvim',
     opts = {
@@ -544,11 +545,12 @@ require('lazy').setup({
       format_on_save = {
         timeout_ms = 500,
         lsp_fallback = true,
+        
       },
       formatters_by_ft = {
         lua = { 'stylua' },
         -- Conform can also run multiple formatters sequentially
-        -- python = { "isort", "black" },
+        python = { 'isort', 'black' },
         --
         -- You can use a sub-list to tell conform to run *until* a formatter
         -- is found.
@@ -556,6 +558,7 @@ require('lazy').setup({
       },
     },
   },
+  ]]
 
   { -- Autocompletion
     'hrsh7th/nvim-cmp',
@@ -652,7 +655,24 @@ require('lazy').setup({
 
   --WARN: SCHEME SET HERE:
 
-  { 'catppuccin/nvim', name = 'catppuccin', priority = 1000 },
+  {
+    'catppuccin/nvim',
+    name = 'catppuccin',
+    priority = 1001,
+    opts = {
+      integrations = {
+        cmp = true,
+        gitsigns = true,
+        nvimtree = true,
+        treesitter = true,
+        barbar = true,
+      },
+      telescope = {
+        enabled = true,
+        style = 'nvchad',
+      },
+    },
+  },
   { 'loctvl842/monokai-pro.nvim', name = 'monokai-pro', priority = 1000 },
   { 'olimorris/onedarkpro.nvim', name = 'onedarkpro', priority = 1000 },
 
@@ -693,6 +713,7 @@ require('lazy').setup({
       -- - saiw) - [S]urround [A]dd [I]nner [W]ord [)]Paren
       -- - sd'   - [S]urround [D]elete [']quotes
       -- - sr)'  - [S]urround [R]eplace [)] [']
+      --[[
       require('mini.surround').setup()
 
       -- Simple and easy statusline.
@@ -709,6 +730,8 @@ require('lazy').setup({
       statusline.section_location = function()
         return '%2l:%-2v'
       end
+
+      ]]
 
       -- ... and there is more!
       --  Check out: https://github.com/echasnovski/mini.nvim
@@ -781,6 +804,59 @@ require('lazy').setup({
     end,
   },
 
+  --Lualine status line for nvim
+  {
+    'nvim-lualine/lualine.nvim',
+    dependencies = { 'nvim-tree/nvim-web-devicons' },
+    opts = {
+      options = {
+        icons_enabled = true,
+        theme = 'catppuccin',
+        component_separators = { left = '', right = '' },
+        section_separators = { left = '', right = '' },
+        disabled_filetypes = {
+          statusline = {},
+          winbar = {},
+        },
+        ignore_focus = {},
+        always_divide_middle = true,
+        globalstatus = false,
+        refresh = {
+          statusline = 1000,
+          tabline = 1000,
+          winbar = 1000,
+        },
+      },
+      sections = {
+        lualine_a = { 'mode' },
+        lualine_b = { 'branch', 'diff', 'diagnostics' },
+        lualine_c = { 'filename' },
+        lualine_x = { 'encoding', 'fileformat', 'filetype' },
+        lualine_y = { 'progress' },
+        lualine_z = { 'location' },
+      },
+      inactive_sections = {
+        lualine_a = {},
+        lualine_b = {},
+        lualine_c = { 'filename' },
+        lualine_x = { 'location' },
+        lualine_y = {},
+        lualine_z = {},
+      },
+      tabline = {},
+      winbar = {},
+      inactive_winbar = {},
+      extensions = {},
+    },
+
+    config = function()
+      require('lualine').setup()
+    end,
+  },
+
+  { 'christoomey/vim-tmux-navigator' },
+
+  -- WARNING: end of PLUGINS
   -- The following two comments only work if you have downloaded the kickstart repo, not just copy pasted the
   -- init.lua. If you want these files, they are in the repository, so you can just download them and
   -- put them in the right spots if you want.
@@ -821,5 +897,15 @@ require('lazy').setup({
   },
 })
 
+-- WARN: colosrcheme settings:
+
+local colorscheme = 'catppuccin-macchiato'
+
+local status_ok = pcall(vim.cmd.colorscheme, colorscheme)
+if not status_ok then
+  print 'color scheme not found!'
+  return
+end
+vim.cmd 'set noexpandtab'
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
