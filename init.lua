@@ -37,6 +37,8 @@ vim.opt.showmode = false
 --  Remove this option if you want your OS clipboard to remain independent.
 --  See `:help 'clipboard'`
 vim.opt.clipboard = 'unnamedplus'
+--disable swap files:
+vim.noswapfile = true
 
 -- Enable break indent
 vim.opt.breakindent = true
@@ -875,6 +877,7 @@ require('lazy').setup({
   --  Uncomment the following line and add your plugins to `lua/custom/plugins/*.lua` to get going.
   --    For additional information, see `:help lazy.nvim-lazy.nvim-structuring-your-plugins`
   -- { import = 'custom.plugins' },
+  { 'wakatime/vim-wakatime', lazy = false }
 }, {
   ui = {
     -- If you have a Nerd Font, set icons to an empty table which will use the
