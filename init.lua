@@ -261,6 +261,7 @@ require('lazy').setup({
 
       -- Useful for getting pretty icons, but requires a Nerd Font.
       { 'nvim-tree/nvim-web-devicons', enabled = vim.g.have_nerd_font },
+      { 'xiyaowong/telescope-emoji.nvim'},
     },
     config = function()
       -- Telescope is a fuzzy finder that comes with a lot of different things that
@@ -304,6 +305,8 @@ require('lazy').setup({
       -- Enable telescope extensions, if they are installed
       pcall(require('telescope').load_extension, 'fzf')
       pcall(require('telescope').load_extension, 'ui-select')
+      pcall(require('telescope').load_extension, 'emoji')
+      
 
       -- See `:help telescope.builtin`
       local builtin = require 'telescope.builtin'
@@ -317,6 +320,8 @@ require('lazy').setup({
       vim.keymap.set('n', '<leader>fr', builtin.resume, { desc = '[S]earch [R]esume' })
       vim.keymap.set('n', '<leader>f.', builtin.oldfiles, { desc = '[S]earch Recent Files ("." for repeat)' })
       vim.keymap.set('n', '<leader>fb', builtin.buffers, { desc = '[ ] Find existing buffers' })
+      vim.keymap.set('n', '<leader>fp', builtin.man_pages, { desc = '[S]earch [M]an [P]ages'})
+      vim.keymap.set('n', '<leader>em', function() require('telescope').extensions.emoji.emoji() end, {desc = '[E][M]oji picker'})
 
       -- Slightly advanced example of overriding default behavior and theme
       vim.keymap.set('n', '<leader>/', function()
@@ -340,6 +345,7 @@ require('lazy').setup({
       vim.keymap.set('n', '<leader>sn', function()
         builtin.find_files { cwd = vim.fn.stdpath 'config' }
       end, { desc = '[S]earch [N]eovim files' })
+
     end,
   },
 
@@ -853,7 +859,129 @@ require('lazy').setup({
   --  Uncomment the following line and add your plugins to `lua/custom/plugins/*.lua` to get going.
   --    For additional information, see `:help lazy.nvim-lazy.nvim-structuring-your-plugins`
   -- { import = 'custom.plugins' },
-  { 'wakatime/vim-wakatime', lazy = false }
+  { 'wakatime/vim-wakatime', lazy = false },
+
+  {
+      'MeanderingProgrammer/render-markdown.nvim',
+      opts = {},
+      --dependencies = { 'nvim-treesitter/nvim-treesitter', 'echasnovski/mini.nvim' }, -- if you use the mini.nvim suite
+      -- dependencies = { 'nvim-treesitter/nvim-treesitter', 'echasnovski/mini.icons' }, -- if you use standalone mini plugins
+      dependencies = { 'nvim-treesitter/nvim-treesitter', 'nvim-tree/nvim-web-devicons' }, -- if you prefer nvim-web-devicons
+  },
+
+  --NOTE: Markdown preview
+  -- - viewer for markdown files
+  {
+    "iamcco/markdown-preview.nvim",
+    cmd = { "MarkdownPreviewToggle", "MarkdownPreview", "MarkdownPreviewStop" },
+    ft = { "markdown" },
+    build = function() vim.fn["mkdp#util#install"]() end,
+  },
+
+  -- NOTE: helpful for git actions !!
+  --[[
+  {
+    "tpope/vim-fugitive",
+    config = function()
+      vim.api.nvim_set_keymap("n", "<leader>gs", ":Git<CR>", { noremap = true, silent = true })
+      vim.api.nvim_set_keymap
+("n", "<leader>gc", ":Git commit<CR>", { noremap = true, silent = true })
+      vim.api.nvim_set_keymap("n", "<leader>gp", ":Git push<CR>", { noremap = true, silent = true })
+    end,
+  },
+  --]]
+  {
+    "github/copilot.vim",  -- Official GitHub Copilot plugin
+    config = function()
+      -- Optional: You can set custom keybindings or configure Copilot here.
+      -- For example:
+      vim.api.nvim_set_keymap("i", "<C-j>", 'copilot#Accept("<CR>")', { silent = true, expr = true })
+      vim.api.nvim_set_keymap("i", "<C-n>", 'copilot#Cancel("<CR>")', { silent = true, expr = true })
+      vim.g.copilot_no_tab_map = true  -- Disable default <Tab> mapping if needed
+    end,
+  },
+
+
+  {
+    "CopilotC-Nvim/CopilotChat.nvim",
+    branch = "canary",
+
+    dependencies = {
+      { "github/copilot.vim" }, -- or github/copilot.vim
+      { "nvim-lua/plenary.nvim" }, -- for curl, log wrapper
+    },
+    build = "make tiktoken", -- Only on MacOS or Linux
+    opts = {
+      debug = true, -- Enable debugging
+      -- See Configuration section for rest
+    },
+    --[[
+    config = function()
+      -- Keybindings
+      vim.api.nvim_set_keymap('n', '<leader>cc', ':CopilotChat<CR>', { noremap = true, silent = true })
+      vim.api.nvim_set_keymap('n', '<leader>cq', ':CopilotChatClose<CR>', { noremap = true, silent = true })
+      vim.api.nvim_set_keymap('i', '<C-Enter>', '<Esc>:CopilotChatSend<CR>', { noremap = true, silent = true })
+      vim.api.nvim_set_keymap('n', '<leader>ct', ':CopilotChatToggle<CR>', { noremap = true, silent = true })
+    end,
+    --]]
+  },
+
+
+-- NOTE: good plugin but not working with copilot
+-- {
+--   "olimorris/codecompanion.nvim",
+--   dependencies = {
+--     "nvim-lua/plenary.nvim",
+--     "nvim-treesitter/nvim-treesitter",
+--     "hrsh7th/nvim-cmp", -- Optional: For using slash commands and variables in the chat buffer
+--     --[[
+--     {
+--       "stevearc/dressing.nvim", -- Optional: Improves the default Neovim UI
+--       opts = {},
+--     },
+--     --]]
+--     "nvim-telescope/telescope.nvim", -- Optional: For using slash commands
+--   },
+--   config = function()
+--     local ok, codecompanion = pcall(require, "codecompanion")
+--     if not ok then
+--       vim.api.nvim_err_writeln("Failed to load codecompanion: " .. codecompanion)
+--       return
+--     end
+--
+--     local success, setup_error = pcall(function()
+--       codecompanion.setup({
+--         strategies = {
+--           chat = {
+--             adapter = "copilot",
+--           },
+--           inline = {
+--             adapter = "copilot",
+--           },
+--           agent = {
+--             adapter = "copilot",
+--           },
+--         },
+--       })
+--     end)
+--
+--     if not success then
+--       vim.api.nvim_err_writeln("Error during codecompanion setup: " .. setup_error)
+--     end
+--   end,
+-- }
+
+  -- NOTE: testing own plugin
+  --[[
+  {
+      dir ="~/Code/learning/lua/codetracker.nvim/",
+      name = "codetracker",
+      config = function()
+          require("init")
+      end
+  },
+  --]]
+
 },
   {
   ui = {
@@ -923,8 +1051,14 @@ require('lualine').setup {
 
 -- WARN: colosrcheme settings:
 
-local colorscheme = 'catppuccin'
+local colorscheme = 'tokyonight-night'
 --local colorscheme = 'rose-pine-moon'
+--
+--NOTE: copilot caht settings
+      vim.api.nvim_set_keymap('n', '<leader>cc', ':CopilotChat<CR>', { desc = "open copilot chat"})
+      vim.api.nvim_set_keymap('n', '<leader>cq', ':CopilotChatClose<CR>', {desc = "[Q]uit Copilot Chat"})
+      vim.api.nvim_set_keymap('i', '<C-Enter>', '<Esc>:CopilotChatSend<CR>', { silent = true})
+      vim.api.nvim_set_keymap('n', '<leader>ct', ':CopilotChatToggle<CR>', { desc = "[T]oglle copilot chat", noremap = true, silent = true })
 
 local status_ok = pcall(vim.cmd.colorscheme, colorscheme)
 if not status_ok then
