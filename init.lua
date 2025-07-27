@@ -9,7 +9,7 @@ vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 
 -- Set to true if you have a Nerd Font installed
-vim.g.have_nerd_font = true
+vim.g.have_nerd_font = false
 
 -- disable netrw for neovim.tree plugin
 vim.g.loaded_netrw = 1
@@ -709,6 +709,9 @@ require('lazy').setup({
     end,
   },
 
+-- NOTE: gruvbox color scheme
+  { "ellisonleao/gruvbox.nvim", priority = 1000 , config = true, opts = ...},
+
   -- Highlight todo, notes, etc in comments
   { 'folke/todo-comments.nvim', event = 'VimEnter', dependencies = { 'nvim-lua/plenary.nvim' }, opts = { signs = false } },
 
@@ -859,7 +862,7 @@ require('lazy').setup({
   --  Uncomment the following line and add your plugins to `lua/custom/plugins/*.lua` to get going.
   --    For additional information, see `:help lazy.nvim-lazy.nvim-structuring-your-plugins`
   -- { import = 'custom.plugins' },
-  { 'wakatime/vim-wakatime', lazy = false },
+  -- { 'wakatime/vim-wakatime', lazy = false },
 
   {
       'MeanderingProgrammer/render-markdown.nvim',
@@ -871,12 +874,12 @@ require('lazy').setup({
 
   --NOTE: Markdown preview
   -- - viewer for markdown files
-  {
-    "iamcco/markdown-preview.nvim",
-    cmd = { "MarkdownPreviewToggle", "MarkdownPreview", "MarkdownPreviewStop" },
-    ft = { "markdown" },
-    build = function() vim.fn["mkdp#util#install"]() end,
-  },
+  -- {
+  --   "iamcco/markdown-preview.nvim",
+  --   cmd = { "MarkdownPreviewToggle", "MarkdownPreview", "MarkdownPreviewStop" },
+  --   ft = { "markdown" },
+  --   build = function() vim.fn["mkdp#util#install"]() end,
+  -- },
 
   -- NOTE: helpful for git actions !!
   --[[
@@ -1010,7 +1013,7 @@ require('lazy').setup({
 require('lualine').setup {
   options = {
     icons_enabled = true,
-    theme = 'dracula',
+    theme = 'gruvbox',
     component_separators = { left = '', right = ''},
     section_separators = { left = '', right = ''},
     disabled_filetypes = {
@@ -1051,10 +1054,10 @@ require('lualine').setup {
 
 -- WARN: colosrcheme settings:
 
-local colorscheme = 'tokyonight-night'
+local colorscheme = 'gruvbox'
 --local colorscheme = 'rose-pine-moon'
 --
---NOTE: copilot caht settings
+--NOTE: copilot chat settings
       vim.api.nvim_set_keymap('n', '<leader>cc', ':CopilotChat<CR>', { desc = "open copilot chat"})
       vim.api.nvim_set_keymap('n', '<leader>cq', ':CopilotChatClose<CR>', {desc = "[Q]uit Copilot Chat"})
       vim.api.nvim_set_keymap('i', '<C-Enter>', '<Esc>:CopilotChatSend<CR>', { silent = true})
